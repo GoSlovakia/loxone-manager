@@ -1,0 +1,25 @@
+{
+    "name": "goslovakia/loxone-manager",
+    "description": "Loxone API manager",
+    "type": "library",
+    "require": {
+        "php": "^8.3",
+        "ext-curl": "*",
+        "illuminate/support": "^11.33",
+        "guzzlehttp/guzzle": "^7.9"
+    },
+    "autoload": {
+        "psr-4": {
+            "Goslovakia\\Loxone\\": "src/"
+        }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true,
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Goslovakia\\Loxone\\ServiceProvider"
+            ]
+        }
+    }
+}
