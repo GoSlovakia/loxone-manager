@@ -5,7 +5,7 @@
     "require": {
         "php": "^8.3",
         "ext-curl": "*",
-        "illuminate/support": "^11.33",
+        "illuminate/support": "^12.18",
         "guzzlehttp/guzzle": "^7.9"
     },
     "autoload": {
