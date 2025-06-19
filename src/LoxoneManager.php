@@ -107,7 +107,7 @@ class LoxoneManager
                 $data = json_decode($response, true);
 
                 if (isset($data['LL']['value'])) {
-                    return $data['LL']['value'] == "1";
+                    return $data['LL']['value'] == '1';
                 }
             }
 
@@ -162,6 +162,52 @@ class LoxoneManager
             $this->miniserverIp = $this->requestIp();
 
             return $this->setControlValue($uuid, $value);
+        }
+    }
+
+    public function activatePushButton(string $uuid): bool
+    {
+        try {
+            $result = $this->client->request('GET', 'https://' . $this->miniserverIp . '/jdev/sps/io/' . $uuid . '/pulse');
+            $statusCode = $result->getStatusCode();
+            $response = $result->getBody();
+
+            if ($statusCode == 200 && json_validate($response)) {
+                $data = json_decode($response, true);
+
+                if (isset($data['LL']['value'])) {
+                    return $data['LL']['value'] == '1';
+                }
+            }
+
+            throw new ControlException('Failed to activate push button.', $statusCode);
+        } catch (ConnectException $e) {
+            $this->miniserverIp = $this->requestIp();
+
+            return $this->activatePushButton($uuid);
+        }
+    }
+
+    public function setRadioValue(string $uuid, string $value): bool
+    {
+        try {
+            $result = $this->client->request('GET', 'https://' . $this->miniserverIp . '/jdev/sps/io/' . $uuid . '/' . $value);
+            $statusCode = $result->getStatusCode();
+            $response = $result->getBody();
+
+            if ($statusCode == 200 && json_validate($response)) {
+                $data = json_decode($response, true);
+
+                if (isset($data['LL']['value'])) {
+                    return $data['LL']['value'] == '1';
+                }
+            }
+
+            throw new ControlException('Failed to set radio value.', $statusCode);
+        } catch (ConnectException $e) {
+            $this->miniserverIp = $this->requestIp();
+
+            return $this->setRadioValue($uuid, $value);
         }
     }
 }
