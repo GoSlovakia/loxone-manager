@@ -73,6 +73,20 @@ class LoxoneManager
         }
     }
 
+    public function reboot(): bool
+    {
+        try {
+            $result = $this->client->request('GET', 'https://' . $this->miniserverIp . '/dev/sys/reboot');
+            $statusCode = $result->getStatusCode();
+
+            return $statusCode == 200;
+        } catch (ConnectException $e) {
+            $this->miniserverIp = $this->requestIp();
+
+            return $this->reboot();
+        }
+    }
+
     public function getSwitchState(string $uuid): bool
     {
         try {
