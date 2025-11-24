@@ -7,6 +7,7 @@ use Goslovakia\Loxone\Exceptions\RequestIpException;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ConnectException;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Log;
 
 class LoxoneManager
 {
@@ -20,7 +21,9 @@ class LoxoneManager
         $this->client = new Client([
             'verify' => false, // Disable SSL validation because some endpoints return no/wrong certificate
             'http_errors' => false, // Disable Guzzle exceptions so we can send our custom exceptions
-            'auth' => [$username, $password] // HTTP Auth
+            'auth' => [$username, $password], // HTTP Auth
+            'timeout' => 10,
+            'connect_timeout' => 10
         ]);
 
         $miniserverIp = Cache::get('loxone_' . $serialNumber . '_ip');
@@ -104,6 +107,8 @@ class LoxoneManager
 
             throw new ControlException('Failed to read switch state.', $statusCode);
         } catch (ConnectException $e) {
+            Log::error($e);
+
             $this->miniserverIp = $this->requestIp();
 
             return $this->getSwitchState($uuid);
@@ -127,6 +132,8 @@ class LoxoneManager
 
             throw new ControlException('Failed to change switch state.', $statusCode);
         } catch (ConnectException $e) {
+            Log::error($e);
+
             $this->miniserverIp = $this->requestIp();
 
             return $this->setSwitchState($uuid, $state);
@@ -150,6 +157,8 @@ class LoxoneManager
 
             throw new ControlException('Failed to read control value.', $statusCode);
         } catch (ConnectException $e) {
+            Log::error($e);
+
             $this->miniserverIp = $this->requestIp();
 
             return $this->getControlValue($uuid);
@@ -173,6 +182,8 @@ class LoxoneManager
 
             throw new ControlException('Failed to set control value.', $statusCode);
         } catch (ConnectException $e) {
+            Log::error($e);
+
             $this->miniserverIp = $this->requestIp();
 
             return $this->setControlValue($uuid, $value);
@@ -196,6 +207,8 @@ class LoxoneManager
 
             throw new ControlException('Failed to activate push button.', $statusCode);
         } catch (ConnectException $e) {
+            Log::error($e);
+
             $this->miniserverIp = $this->requestIp();
 
             return $this->activatePushButton($uuid);
@@ -219,6 +232,8 @@ class LoxoneManager
 
             throw new ControlException('Failed to set radio value.', $statusCode);
         } catch (ConnectException $e) {
+            Log::error($e);
+
             $this->miniserverIp = $this->requestIp();
 
             return $this->setRadioValue($uuid, $value);
