@@ -15,7 +15,7 @@ class LoxoneManager
     private string $serialNumber;
     private string $miniserverIp;
 
-    public function __construct(string $serialNumber, string $username, string $password)
+    public function __construct(string $serialNumber, string $username, string $password, ?string $localIpAddress = null)
     {
         $this->serialNumber = $serialNumber;
         $this->client = new Client([
@@ -24,13 +24,14 @@ class LoxoneManager
             'auth' => [$username, $password], // HTTP Auth
             'timeout' => 10,
             'connect_timeout' => 10,
-            'curl' => [
-                CURLOPT_SSLVERSION => CURL_SSLVERSION_TLSv1_2,
-            ],
         ]);
 
-        $miniserverIp = Cache::get('loxone_' . $serialNumber . '_ip');
-        $this->miniserverIp = $miniserverIp ?? $this->requestIp();
+        if ($localIpAddress) {
+            $this->miniserverIp = $localIpAddress;
+        } else {
+            $miniserverIp = Cache::get('loxone_' . $serialNumber . '_ip');
+            $this->miniserverIp = $miniserverIp ?? $this->requestIp();
+        }
     }
 
     private function requestIp(): string
