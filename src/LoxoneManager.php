@@ -23,7 +23,10 @@ class LoxoneManager
             'http_errors' => false, // Disable Guzzle exceptions so we can send our custom exceptions
             'auth' => [$username, $password], // HTTP Auth
             'timeout' => 10,
-            'connect_timeout' => 10
+            'connect_timeout' => 10,
+            'curl' => [
+                CURLOPT_SSLVERSION => CURL_SSLVERSION_TLSv1_2,
+            ],
         ]);
 
         $miniserverIp = Cache::get('loxone_' . $serialNumber . '_ip');
@@ -70,6 +73,8 @@ class LoxoneManager
 
             return null;
         } catch (ConnectException $e) {
+            Log::error($e);
+
             $this->miniserverIp = $this->requestIp();
 
             return $this->getMiniserverInfo();
@@ -84,6 +89,8 @@ class LoxoneManager
 
             return $statusCode == 200;
         } catch (ConnectException $e) {
+            Log::error($e);
+
             $this->miniserverIp = $this->requestIp();
 
             return $this->reboot();
